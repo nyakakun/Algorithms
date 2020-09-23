@@ -34,7 +34,7 @@ FILE* GetFile(const char* MSG, const char* Mode) {
 
 		FILE* TempFile = fopen(FileName, Mode);
 		if (TempFile == NULL) {
-			cout << "Файл не существует" << endl;
+			cout << "Файл не существует или не доступен" << endl;
 		}
 		else {
 			break;
@@ -48,7 +48,13 @@ FILE* GetFile(const char* MSG, const char* Mode) {
 	return TempFile;
 }
 
-long int CalculateSum(){}
+long int CalculateSum(FILE* InputData, FILE* OutputData)
+{
+	while(InputData)
+	{
+
+	}
+}
 
 int main(int ArgCount, const char* Args[]) {
 	setlocale(LC_ALL, "Russian");
@@ -56,5 +62,5 @@ int main(int ArgCount, const char* Args[]) {
 	if (Input == NULL) exit(0);
 	FILE* Output = GetFile("Введите имя выходного файла", "wt");
 	if (Output == NULL) exit(0);
-
+	CalculateSum(Input, Output);
 }
