@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <errno.h>
 
 using namespace std;
 
@@ -13,7 +12,7 @@ char* ReadString(istream *Input) {
 			TempString = TempFileName;
 		}
 		else {
-			cout << "íåäîñòàòî÷íî ïàìÿòè äëÿ ðàáîòû ïðèëîæåíèÿ";
+			cout << "Ð½ÐµÐ´Ð¾ÑÑ‚Ð°Ñ‚Ð¾Ñ‡Ð½Ð¾ Ð¿Ð°Ð¼ÑÑ‚Ð¸ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ñ";
 			Input->get();
 			exit(0);
 		}
@@ -33,32 +32,29 @@ FILE* GetFile(const char* MSG, const char* Mode) {
 
 		FileName = ReadString(&cin);
 
-		int Error = fopen_s(&TempFile, FileName, Mode);
-		if (Error == EACCES) {
-			cout << "Ôàéë íå äîñòóïåí" << endl;
+		FILE* TempFile = fopen(FileName, Mode);
+		if (TempFile == NULL) {
+			cout << "Ð¤Ð°Ð¹Ð» Ð½Ðµ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÐµÑ‚" << endl;
 		}
 		else {
-			if (TempFile == NULL) {
-				cout << "Ôàéë íå ñóùåñòâóåò" << endl;
-			}
-			else {
-				break;
-			}
+			break;
 		}
 		do {
-			cout << "Ïîâòîðèòü ââîä? (Y - ïîâòîðèòü, N - âûéòè)" << endl;
+			cout << "ÐŸÐ¾Ð²Ñ‚Ð¾Ñ€Ð¸Ñ‚ÑŒ Ð²Ð²Ð¾Ð´? (Y - Ð¿Ð¾Ð²Ñ‚Ð¾Ñ€Ð¸Ñ‚ÑŒ, N - Ð²Ñ‹Ð¹Ñ‚Ð¸)" << endl;
 			RepeatInput = cin.get();
-			if ((RepeatInput != 'Y') && (RepeatInput != 'N') && (RepeatInput != 'y') && (RepeatInput != 'n')) {
-
-			}
-		} while (true)
+			if (RepeatInput == 'y'){RepeatInput = 'Y';}
+		} while (!((RepeatInput == 'Y') or ((RepeatInput == 'N') or (RepeatInput == 'n'))));
 	}
 	return TempFile;
 }
 
+long int CalculateSum(){}
+
 int main(int ArgCount, const char* Args[]) {
 	setlocale(LC_ALL, "Russian");
-	FILE* Input = GetFile("Ââåäèòå èìÿ ôàéëà ñ äàííûìè", "rt");
-	char* FileName = ReadString(&cin);
-	cin.get();
+	FILE* Input = GetFile("Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð¸Ð¼Ñ Ñ„Ð°Ð¹Ð»Ð° Ñ Ð´Ð°Ð½Ð½Ñ‹Ð¼Ð¸", "rt");
+	if (Input == NULL) exit(0);
+	FILE* Output = GetFile("Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð¸Ð¼Ñ Ð²Ñ‹Ñ…Ð¾Ð´Ð½Ð¾Ð³Ð¾ Ñ„Ð°Ð¹Ð»Ð°", "wt");
+	if (Output == NULL) exit(0);
+
 }
