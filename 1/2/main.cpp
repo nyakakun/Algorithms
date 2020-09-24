@@ -106,8 +106,6 @@ char DigitToChar(short Digit)
 	}
 }
 
-
-
 char* NumToString(unsigned long long Number)
 {
 	unsigned long long TempNum = Number;
@@ -120,7 +118,7 @@ char* NumToString(unsigned long long Number)
 		TempNum = TempNum / 10;
 		LengthString++;
 		char* TempFileName = (char*)realloc(StringNum, ((LengthString) * sizeof(char)));
-
+		
 		if (TempFileName != NULL) {
 			StringNum = TempFileName;
 		}
@@ -130,9 +128,9 @@ char* NumToString(unsigned long long Number)
 			exit(0);
 		}
 
-		for(int Index = LengthString - 1; Index >= 0; Index++)
+		for(int Index = LengthString - 2; Index >= 0; Index--)
 		{
-			StringNum[Index] = StringNum[Index + 1];
+			StringNum[Index + 1] = StringNum[Index];
 		}
 		StringNum[0] = TempChar;
 	} while (TempNum > 0);
@@ -192,7 +190,8 @@ int main(int ArgCount, const char* Args[]) {
 	FILE* Output = GetFile("Введите имя выходного файла", "wt");
 	if(Output == NULL) exit(0);
 
-	fwprintf(Output, L"Сумма всех чисел во входном файле: %u", CalculateSum(Input));
+	fputs("Сумма всех чисел во входном файле: ", Output);
+	fputs(NumToString(CalculateSum(Input)), Output);
 
 	fclose(Input);
 	fclose(Output);
