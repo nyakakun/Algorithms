@@ -32,7 +32,7 @@ FILE* GetFile(const char* MSG, const char* Mode) {
 
 		FileName = ReadString(&cin);
 
-		FILE* TempFile = fopen(FileName, Mode);
+		TempFile = fopen(FileName, Mode);
 		if (TempFile == NULL) {
 			cout << "Файл не существует или не доступен" << endl;
 		}
@@ -48,19 +48,152 @@ FILE* GetFile(const char* MSG, const char* Mode) {
 	return TempFile;
 }
 
-long int CalculateSum(FILE* InputData, FILE* OutputData)
+short CharToDigit(char Digit)
 {
-	while(InputData)
+	switch (Digit)
 	{
-
+	case '0':
+		return 0;
+	case '1':
+		return 1;
+	case '2':
+		return 2;
+	case '3':
+		return 3;
+	case '4':
+		return 4;
+	case '5':
+		return 5;
+	case '6':
+		return 6;
+	case '7':
+		return 7;
+	case '8':
+		return 8;
+	case '9':
+		return 9;
+	default:
+		return -1;
 	}
 }
 
+char DigitToChar(short Digit)
+{
+	switch (Digit)
+	{
+	case 0:
+		return '0';
+	case 1:
+		return '1';
+	case 2:
+		return '2';
+	case 3:
+		return '3';
+	case 4:
+		return '4';
+	case 5:
+		return '5';
+	case 6:
+		return '6';
+	case 7:
+		return '7';
+	case 8:
+		return '8';
+	case 9:
+		return '9';
+	default:
+		return 'A';
+	}
+}
+
+
+
+char* NumToString(unsigned long long Number)
+{
+	unsigned long long TempNum = Number;
+	int LengthString = 1;
+	char* StringNum = (char*)calloc(LengthString, sizeof(char));
+	StringNum[0] = 0;
+	do
+	{
+		char TempChar = DigitToChar(TempNum % 10);
+		TempNum = TempNum / 10;
+		LengthString++;
+		char* TempFileName = (char*)realloc(StringNum, ((LengthString) * sizeof(char)));
+
+		if (TempFileName != NULL) {
+			StringNum = TempFileName;
+		}
+		else {
+			cout << "недостаточно памяти для работы приложения";
+			cin.get();
+			exit(0);
+		}
+
+		for(int Index = LengthString - 1; Index >= 0; Index++)
+		{
+			StringNum[Index] = StringNum[Index + 1];
+		}
+		StringNum[0] = TempChar;
+	} while (TempNum > 0);
+	return StringNum;
+}
+
+short ReadDigit(FILE* InputData)
+{
+	if (!feof(InputData)){
+		char Digit = getc(InputData);
+		return CharToDigit(Digit);
+	}
+	return -1;
+}
+
+long long ReadNum(FILE* InputData)
+{
+	const long long OverflowNum = INT64_MAX / 10;
+
+	long long Number = 0;
+	bool FindDigit = false;
+	while(!feof(InputData)){
+		short Digit = ReadDigit(InputData);
+		if(Digit >= 0)
+		{
+			FindDigit = true;
+			Number = Number * 10 + Digit;
+			if(OverflowNum <= Number) return Number;
+		} else
+		if(FindDigit) return Number;
+	}
+	if(FindDigit) return Number;
+	else return -1;
+	
+}
+
+unsigned long long CalculateSum(FILE* InputData)
+{
+	
+	long long TempNum = ReadNum(InputData);
+	unsigned long long Sum = 0;
+	while(TempNum >= 0)
+	{
+		Sum += TempNum;
+		TempNum = ReadNum(InputData);
+	}
+	return Sum;
+}
+
 int main(int ArgCount, const char* Args[]) {
+
 	setlocale(LC_ALL, "Russian");
+
 	FILE* Input = GetFile("Введите имя файла с данными", "rt");
-	if (Input == NULL) exit(0);
+	if(Input == NULL) exit(0);
+
 	FILE* Output = GetFile("Введите имя выходного файла", "wt");
-	if (Output == NULL) exit(0);
-	CalculateSum(Input, Output);
+	if(Output == NULL) exit(0);
+
+	fwprintf(Output, L"Сумма всех чисел во входном файле: %u", CalculateSum(Input));
+
+	fclose(Input);
+	fclose(Output);
 }
