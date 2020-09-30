@@ -6,6 +6,7 @@ using namespace std;
 char* ReadString(istream *Input) {
 	char* TempString = (char*)calloc(1, sizeof(char));
 	char TempChar;
+
 	for (int Index = 0; (TempChar = Input->get()) != '\n'; Index++) {
 		char* TempFileName = (char*)realloc(TempString, ((Index + 2) * sizeof(char)));
 		if (TempFileName != NULL) {
@@ -26,6 +27,7 @@ FILE* GetFile(const char* MSG, const char* Mode) {
 	char* FileName;
 	char RepeatInput = 'Y';
 	FILE* TempFile = NULL;
+
 	while (RepeatInput == 'Y')
 	{
 		cout << MSG << endl;
@@ -111,6 +113,7 @@ char* NumToString(unsigned long long Number)
 	unsigned long long TempNum = Number;
 	int LengthString = 1;
 	char* StringNum = (char*)calloc(LengthString, sizeof(char));
+
 	StringNum[0] = 0;
 	do
 	{
@@ -152,6 +155,7 @@ long long ReadNum(FILE* InputData)
 
 	long long Number = 0;
 	bool FindDigit = false;
+	
 	while(!feof(InputData)){
 		short Digit = ReadDigit(InputData);
 		if(Digit >= 0)
@@ -164,14 +168,13 @@ long long ReadNum(FILE* InputData)
 	}
 	if(FindDigit) return Number;
 	else return -1;
-	
 }
 
 unsigned long long CalculateSum(FILE* InputData)
 {
-	
 	long long TempNum = ReadNum(InputData);
 	unsigned long long Sum = 0;
+
 	while(TempNum >= 0)
 	{
 		Sum += TempNum;
