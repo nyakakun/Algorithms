@@ -1,7 +1,30 @@
+/*
+		Лабораторная: 1
+		Задание: 2
+		Выполнил: Мусин Виктор ПС-22
+		Имя файла с входными данными вводится после запуска программы
+		Структура входного файла: любой набор символов, все числа считываются как положительные
+		Имя файла с выходными данными вводится так же после запуска, после ввода имени файла с входными данными
+		Структура выходного файла: "Сумма всех чисел во входном файле: " + [число]
+		Если во входных данных нет ни одного числа, то сумма равна 0
+*/
 #include <iostream>
 #include <fstream>
 
 using namespace std;
+
+int StringLength(char* String){
+	int Index = 0;
+	for(; String[Index] != 0; Index++){}
+	return Index;
+}
+
+char* StringAppend(char* String, char Char){
+	char* TempString = (char*)realloc(String, ((StringLength(String) + 2) * sizeof(char)));
+	if (TempString != NULL) {
+		return TempString;
+	}
+}
 
 char* ReadString(istream *Input) {
 	char* TempString = (char*)calloc(1, sizeof(char));
@@ -15,7 +38,8 @@ char* ReadString(istream *Input) {
 		else {
 			cout << "недостаточно памяти для работы приложения";
 			Input->get();
-			exit(0);
+			delete TempString;
+			return NULL;
 		}
 		TempString[Index] = TempChar;
 		TempString[Index + 1] = 0;
@@ -75,7 +99,7 @@ short CharToDigit(char Digit)
 	case '9':
 		return 9;
 	default:
-		return -1;
+		return -3;
 	}
 }
 
@@ -108,13 +132,17 @@ char DigitToChar(short Digit)
 	}
 }
 
-char* NumToString(unsigned long long Number)
+char* NumToString(long long Number)
 {
-	unsigned long long TempNum = Number;
+	long long TempNum = Number;
 	int LengthString = 1;
 	char* StringNum = (char*)calloc(LengthString, sizeof(char));
 
 	StringNum[0] = 0;
+
+	if(TempNum < 0){
+
+	}
 	do
 	{
 		char TempChar = DigitToChar(TempNum % 10);
@@ -128,7 +156,8 @@ char* NumToString(unsigned long long Number)
 		else {
 			cout << "недостаточно памяти для работы приложения";
 			cin.get();
-			exit(0);
+			delete StringNum;
+			return "-1";
 		}
 
 		for(int Index = LengthString - 2; Index >= 0; Index--)
@@ -144,41 +173,52 @@ short ReadDigit(FILE* InputData)
 {
 	if (!feof(InputData)){
 		char Digit = getc(InputData);
+		if(Digit == '-'){return -1;}
+		if(Digit == '\n'){return -2;}
 		return CharToDigit(Digit);
 	}
-	return -1;
+	return -100;
 }
 
 long long ReadNum(FILE* InputData)
 {
 	const long long OverflowNum = INT64_MAX / 10;
 
+	bool IsNegative = false;
 	long long Number = 0;
 	bool FindDigit = false;
 	
 	while(!feof(InputData)){
 		short Digit = ReadDigit(InputData);
-		if(Digit >= 0)
-		{
-			FindDigit = true;
-			Number = Number * 10 + Digit;
-			if(OverflowNum <= Number) return Number;
-		} else
-		if(FindDigit) return Number;
+		if(Digit != -2){
+			if(Digit >= 0)
+			{
+				FindDigit = true;
+				Number = Number * 10 + Digit;
+				if(OverflowNum <= Number) return (IsNegative ? -Number : Number);
+			}
+			else if(FindDigit) return (IsNegative ? -Number : Number);
+			else if(Digit == -1) 
+			{
+				if (!IsNegative) IsNegative = true;
+			}
+			else IsNegative = false;
+		}
 	}
 	if(FindDigit) return Number;
-	else return -1;
+	else return 0;
 }
 
-unsigned long long CalculateSum(FILE* InputData)
+long long CalculateSum(FILE* InputData)
 {
-	long long TempNum = ReadNum(InputData);
-	unsigned long long Sum = 0;
+	long long TempNum = 0;
+	long long Sum = 0;
 
-	while(TempNum >= 0)
+	while(!feof(InputData))
 	{
-		Sum += TempNum;
 		TempNum = ReadNum(InputData);
+		Sum += TempNum;
+		cout << TempNum << endl;
 	}
 	return Sum;
 }
@@ -194,7 +234,11 @@ int main(int ArgCount, const char* Args[]) {
 	if(Output == NULL) exit(0);
 
 	fputs("Сумма всех чисел во входном файле: ", Output);
-	fputs(NumToString(CalculateSum(Input)), Output);
+	char* Result = NumToString(CalculateSum(Input));
+	if (Result != "-1")
+	{
+		fputs(Result, Output);
+	}
 
 	fclose(Input);
 	fclose(Output);
